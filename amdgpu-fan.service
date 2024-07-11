@@ -1,9 +1,20 @@
 [Unit]
 Description=amdgpu fan controller
+# Service is typically started by /etc/udev/rules.d/50-amdgpu_fan-set_permissions_and_start.rules once amdgpu device is detected
 
 [Service]
-ExecStart=/usr/bin/amdgpu-fan
-Restart=always
+ExecStart=/usr/local/amdgpu_fan/.local/bin/amdgpu-fan
+User=amdgpu_fan
+Group=amdgpu_fan
+ProtectSystem=yes
+ProtectHome=yes
+PrivateDevices=yes
+ProtectKernelTunables=no
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateNetwork=yes
 
-[Install]
-WantedBy=sysinit.target

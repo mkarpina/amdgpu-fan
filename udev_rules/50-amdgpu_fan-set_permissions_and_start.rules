@@ -1,0 +1,2 @@
+# Update permissions to required files in /sys tree to allow running amdgpu-fan as non-root system user amdgpu_fan. Then starts the service
+SUBSYSTEM=="hwmon", DRIVERS=="amdgpu", ACTION=="add|change", RUN{program}+="/bin/bash -c 'for f in temp1_input pwm1_max pwm1_min pwm1_enable pwm1; do chgrp amdgpu_fan /sys/%p/$f; chmod g+rw /sys/%p/$f; done'", TAG+="systemd", ENV{SYSTEMD_WANTS}="amdgpu-fan.service"
