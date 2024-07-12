@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import time
 from amdgpu_fan import LOGGER as logger
 
 ROOT_DIR = '/sys/class/drm'
@@ -46,10 +47,22 @@ class Card:
 
     @property
     def fan_speed(self):
-        try:
-            return int(self.read_endpoint('fan1_input'))
-        except KeyError:  # better to return no speed then explode
-            return 0
+        limit = 3
+        i = 1
+        while True:
+            try:
+                return int(self.read_endpoint('fan1_input'))
+            except KeyError:  # better to return no speed then explode
+                return 0
+            except OSError as e:
+                logger.error(f"reading endpoint fan1_input failed {i}/{limit}: {e}")
+                if i == limit:
+                    break
+                else:
+                    time.sleep(0.2 * i)
+                    i = i+1
+
+        return 0
 
     @property
     def gpu_temp(self):
